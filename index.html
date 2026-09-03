@@ -25,6 +25,15 @@
         <div class="flex items-center justify-between gap-4">
           <h1 id="deck-title" class="text-2xl font-bold">General</h1>
           <div class="flex gap-2">
+            <button id="export-deck-button" class="rounded-md border border-slate-300 px-3 py-1 hover:bg-slate-200 dark:border-gray-600 dark:hover:bg-gray-700" type="button" title="Export deck as JSON">
+              📥 Export JSON
+            </button>
+            <button id="import-deck-button" class="rounded-md border border-slate-300 px-3 py-1 hover:bg-slate-200 dark:border-gray-600 dark:hover:bg-gray-700" type="button" title="Import deck from JSON">
+              📤 Import JSON
+            </button>
+            <input type="file" id="import-file-input" accept=".json" class="hidden" />
+
+
             <button id="edit-deck-button" class="rounded-md border px-3 py-1 hover:bg-slate-200 dark:hover:bg-gray-700" type="button">
               Edit Name
             </button>
@@ -45,7 +54,7 @@
           <span id="search-count" class="text-sm text-slate-500 dark:text-gray-400">0 matches</span>
           
           <button id="shuffle-card-button" class="rounded-md border border-slate-300 bg-white px-4 py-2 hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700" type="button">
-            🔀 Shuffle
+            Shuffle
           </button>
           <button id="new-card-button" class="rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700" type="button">
             + New Card
@@ -53,6 +62,11 @@
         </div>
 
         <section class="mt-8 grid justify-items-center gap-6" aria-label="Flashcard Study Area">
+          
+          <div class="w-full max-w-[680px] bg-slate-200 rounded-full h-2 dark:bg-gray-700 overflow-hidden">
+            <div id="progress-bar" class="bg-indigo-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>          
+          
           <article id="study-card" class="card" tabindex="0" role="region" aria-label="Flashcard content. Press Space to flip.">
             <div class="card-inner">
               <div class="card-face card-front">

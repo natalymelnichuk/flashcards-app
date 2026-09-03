@@ -9,6 +9,10 @@ const deckTitle = document.querySelector<HTMLHeadingElement>("#deck-title")!;
 const newDeckButton = document.querySelector<HTMLButtonElement>("#new-deck-button")!;
 const editDeckButton = document.querySelector<HTMLButtonElement>("#edit-deck-button")!;
 const deleteDeckButton = document.querySelector<HTMLButtonElement>("#delete-deck-button")!;
+const exportDeckButton = document.querySelector<HTMLButtonElement>("#export-deck-button")!;
+const importDeckButton = document.querySelector<HTMLButtonElement>("#import-deck-button")!;
+const importFileInput = document.querySelector<HTMLInputElement>("#import-file-input")!;
+
 const deckDialog = document.querySelector<HTMLDialogElement>("#deck-dialog")!;
 const deckForm = document.querySelector<HTMLFormElement>("#deck-form")!;
 const nameInput = document.querySelector<HTMLInputElement>("#deck-name")!;
@@ -19,6 +23,7 @@ const newCardButton = document.querySelector<HTMLButtonElement>("#new-card-butto
 const shuffleCardButton = document.querySelector<HTMLButtonElement>("#shuffle-card-button")!;
 const searchInput = document.querySelector<HTMLInputElement>("#card-search")!;
 const searchCount = document.querySelector<HTMLSpanElement>("#search-count")!;
+const progressBar = document.querySelector<HTMLDivElement>("#progress-bar")!;
 
 const cardDialog = document.querySelector<HTMLDialogElement>("#card-dialog")!;
 const cardForm = document.querySelector<HTMLFormElement>("#card-form")!;
@@ -83,6 +88,12 @@ const studyMode = createStudyMode({
     flipBtn.disabled = !hasCards;
     editCardBtn.disabled = !hasCards;
     deleteCardBtn.disabled = !hasCards;
+
+    // Progress Bar calculation
+    const progressPercent = hasCards ? ((index + 1) / total) * 100 : 0;
+    if (progressBar) {
+      progressBar.style.width = `${progressPercent}%`;
+    }
 
     if (!card) {
       cardFront.textContent = getCards().length === 0 ? "No cards in this deck yet." : "No matching cards found.";
@@ -221,6 +232,64 @@ deckForm.addEventListener("submit", (event) => {
   persist();
   render();
   closeDialog(deckDialog);
+});
+
+// Import / Export JSON
+exportDeckButton.addEventListener("click", () => {
+  const cards = getCards();
+  const dataStr = JSON.stringify(cards, null, 2);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${state.activeDeck.toLowerCase().replace(/\s+/g, "_")}_deck.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+importDeckButton.addEventListener("click", () => {
+  importFileInput.click();
+});
+
+importFileInput.addEventListener("change", (e) => {
+  const file = (e.target as HTMLInputElement).files?.[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    try {
+      const importedCards = JSON.parse(event.target?.result as string);
+      if (!Array.isArray(importedCards)) {
+        alert("Invalid JSON format. Expected an array of cards.");
+        return;
+      }
+
+      const validCards: Card[] = importedCards
+        .filter((c) => c && typeof c.front === "string" && typeof c.back === "string")
+        .map((c) => ({
+          id: state.nextCardId++,
+          front: c.front,
+          back: c.back,
+        }));
+
+      if (validCards.length === 0) {
+        alert("No valid cards found in the JSON file.");
+        return;
+      }
+
+      state.cardsByDeck[state.activeDeck].push(...validCards);
+      persist();
+      studyMode.render();
+      alert(`Successfully imported ${validCards.length} cards!`);
+    } catch {
+      alert("Error parsing JSON file.");
+    } finally {
+      importFileInput.value = "";
+    }
+  };
+
+  reader.readAsText(file);
 });
 
 // Card CRUD
