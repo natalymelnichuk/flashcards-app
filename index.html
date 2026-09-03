@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flashcards</title>
+  </head>
+  <body class="m-0 min-w-[320px] bg-slate-100 text-slate-900 dark:bg-gray-900 dark:text-gray-100">
+    <div class="grid min-h-screen grid-cols-1 grid-rows-[auto_auto_1fr_auto] md:grid-cols-[240px_1fr] md:grid-rows-[auto_1fr_auto]">
+      <header class="flex items-center justify-between bg-indigo-700 px-6 py-4 text-white md:col-span-2">
+        <a class="text-xl font-bold" href="#">Flashcards</a>
+        <button id="new-deck-button" class="rounded-md bg-indigo-600 px-4 py-2 hover:bg-indigo-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" type="button">
+          + New Deck
+        </button>
+      </header>
+
+      <aside class="border-b border-slate-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800 md:border-r md:border-b-0">
+        <h2 class="mb-4 text-base font-semibold">Decks</h2>
+        <nav aria-label="Deck navigation">
+          <ul id="deck-list" class="grid list-none gap-2 p-0 sm:grid-cols-3 md:grid-cols-1"></ul>
+        </nav>
+      </aside>
+
+      <main class="mx-auto w-full max-w-5xl p-4 md:p-8">
+        <div class="flex items-center justify-between gap-4">
+          <h1 id="deck-title" class="text-2xl font-bold">General</h1>
+          <div class="flex gap-2">
+            <button id="edit-deck-button" class="rounded-md border px-3 py-1 hover:bg-slate-200 dark:hover:bg-gray-700" type="button">
+              Edit Name
+            </button>
+            <button id="delete-deck-button" class="rounded-md border border-red-300 px-3 py-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-950" type="button">
+              Delete Deck
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-6 flex flex-wrap items-center gap-3">
+          <label class="sr-only" for="card-search">Search cards</label>
+          <input
+            class="min-w-0 flex-1 rounded-md border border-slate-300 bg-white px-3 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 dark:border-gray-600 dark:bg-gray-800"
+            id="card-search"
+            type="search"
+            placeholder="Search cards in this deck..."
+          />
+          <span id="search-count" class="text-sm text-slate-500 dark:text-gray-400">0 matches</span>
+          
+          <button id="shuffle-card-button" class="rounded-md border border-slate-300 bg-white px-4 py-2 hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700" type="button">
+            🔀 Shuffle
+          </button>
+          <button id="new-card-button" class="rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700" type="button">
+            + New Card
+          </button>
+        </div>
+
+        <section class="mt-8 grid justify-items-center gap-6" aria-label="Flashcard Study Area">
+          <article id="study-card" class="card" tabindex="0" role="region" aria-label="Flashcard content. Press Space to flip.">
+            <div class="card-inner">
+              <div class="card-face card-front">
+                <span class="card-label">Front</span>
+                <p id="card-front"></p>
+              </div>
+
+              <div class="card-face card-back bg-indigo-50 text-indigo-950 dark:bg-indigo-950 dark:text-indigo-100">
+                <span class="card-label text-indigo-600 dark:text-indigo-300">Back</span>
+                <p id="card-back"></p>
+              </div>
+            </div>
+          </article>
+
+          <div id="card-controls" class="flex flex-wrap justify-center gap-3">
+            <button id="previous-card-button" type="button">← Previous</button>
+            <button id="flip-card-button" type="button">Flip</button>
+            <button id="next-card-button" type="button">Next →</button>
+            <button id="edit-card-button" class="rounded-md border border-slate-300 px-3 py-2 hover:bg-slate-100 dark:border-gray-600 dark:hover:bg-gray-700" type="button">Edit Card</button>
+            <button id="delete-card-button" class="rounded-md border border-red-300 px-3 py-2 text-red-600 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-950" type="button">Delete Card</button>
+          </div>
+
+          <p id="card-position" class="text-sm text-slate-500 dark:text-gray-400" aria-live="polite"></p>
+        </section>
+      </main>
+
+      <footer class="border-t border-slate-200 p-4 text-center text-sm text-slate-500 dark:border-gray-700 dark:text-gray-400 md:col-span-2">
+        Use <kbd class="rounded border border-slate-300 px-1 dark:border-gray-600">←</kbd>
+        <kbd class="rounded border border-slate-300 px-1 dark:border-gray-600">→</kbd>
+        to navigate and <kbd class="rounded border border-slate-300 px-1 dark:border-gray-600">Space</kbd>
+        to flip card.
+      </footer>
+    </div>
+
+    <!-- Deck Dialog -->
+    <dialog id="deck-dialog" class="rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800 dark:text-white backdrop:bg-black/50">
+      <form id="deck-form" method="dialog" class="grid w-80 gap-4">
+        <h2 id="deck-dialog-title" class="text-xl font-semibold">New Deck</h2>
+
+        <div class="grid gap-1">
+          <label for="deck-name" class="text-sm font-medium">Deck name</label>
+          <input
+            id="deck-name"
+            name="deckName"
+            required
+            maxlength="50"
+            class="rounded-md border border-slate-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            type="text"
+          />
+        </div>
+
+        <div class="flex justify-end gap-2 mt-2">
+          <button id="cancel-deck-button" class="rounded-md border px-4 py-2 hover:bg-slate-100 dark:hover:bg-gray-700" type="button">Cancel</button>
+          <button class="rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700" type="submit">
+            Save
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Card Dialog -->
+    <dialog id="card-dialog" class="rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800 dark:text-white backdrop:bg-black/50">
+      <form id="card-form" method="dialog" class="grid w-96 gap-4">
+        <h2 id="card-dialog-title" class="text-xl font-semibold">New Card</h2>
+
+        <div class="grid gap-1">
+          <label for="card-front-input" class="text-sm font-medium">Front</label>
+          <textarea id="card-front-input" name="front" required rows="3" class="rounded-md border border-slate-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-white"></textarea>
+        </div>
+
+        <div class="grid gap-1">
+          <label for="card-back-input" class="text-sm font-medium">Back</label>
+          <textarea id="card-back-input" name="back" required rows="3" class="rounded-md border border-slate-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-white"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 mt-2">
+          <button id="cancel-card-button" class="rounded-md border px-4 py-2 hover:bg-slate-100 dark:hover:bg-gray-700" type="button">Cancel</button>
+          <button class="rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700" type="submit">
+            Save
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,152 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  button,
+  input {
+    font: inherit;
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible {
+    outline: 3px solid #8b5cf6;
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .card {
+    position: relative;
+    width: 100%;
+    max-width: 680px;
+    min-height: 260px;
+    perspective: 1000px;
+  }
+
+  .card-inner {
+    position: relative;
+    width: 100%;
+    min-height: 260px;
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease;
+  }
+
+  .card.is-flipped .card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    min-height: 260px;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem;
+    border: 1px solid #dce1eb;
+    border-radius: 1rem;
+    background: white;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    box-shadow: 0 8px 24px rgb(15 23 42 / 8%);
+  }
+
+  .card-front {
+    z-index: 1;
+  }
+
+  .card-back {
+    z-index: 2;
+    transform: rotateY(180deg);
+  }
+
+  .card-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .card-face p {
+    margin: 2rem 0 0;
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .card-face {
+      border-color: #374151;
+      background: #1f2937;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-inner {
+      transition: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .study-card,
+    .study-card-inner,
+    .study-card-face {
+      min-height: 220px;
+    }
+
+    .study-card-face {
+      padding: 1.25rem;
+    }
+  }
+
+  #previous-card-button,
+  #next-card-button,
+  #flip-card-button {
+    min-width: 110px;
+    padding: 0.65rem 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    background: white;
+    color: #172033;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+  }
+
+  #previous-card-button:hover,
+  #next-card-button:hover {
+    border-color: #818cf8;
+    background: #eef2ff;
+  }
+
+  #flip-card-button {
+    border-color: #4338ca;
+    background: #4338ca;
+    color: white;
+    font-weight: 600;
+  }
+
+  #flip-card-button:hover {
+    background: #3730a3;
+  }
+
+  #previous-card-button:disabled,
+  #next-card-button:disabled,
+  #flip-card-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #previous-card-button,
+    #next-card-button {
+      border-color: #4b5563;
+      background: #1f2937;
+      color: #e5e7eb;
+    }
+
+    #previous-card-button:hover,
+    #next-card-button:hover {
+      background: #374151;
+    }
+  }
+}
